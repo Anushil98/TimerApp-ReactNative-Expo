@@ -95,6 +95,9 @@ export class MainTimer extends React.Component{
       this.interval = setInterval(this.dec,1000)
     }
   }
+  componentWillUnmount(){
+    clearInterval(this.interval)
+  }
   componentDidUpdate(prevprops,prevState)
   {
     if(prevState.minutes == "00" && prevState.seconds=="01"){
@@ -112,6 +115,8 @@ export class MainTimer extends React.Component{
     }
   }
   reset(){
+    clearInterval(this.interval)
+    this.on=false
     Vibration.vibrate(50)
     this.setState(prevState=>({
       minutes:this.inittime.minutes,
@@ -239,7 +244,7 @@ export default class App extends React.Component{
     else{
       return(
         <View>
-        <TouchableOpacity onPress={()=>this.re()} style={[styles.button,{position:'absolute',top:windowHeight-80,width:windowWidth-20}]}><Text>Back</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>this.re()} style={[styles.button,{position:'absolute',top:windowHeight-80,width:windowWidth-20}]}><Text style={styles.buttontext}>Back</Text></TouchableOpacity>
         <MainTimer mins={this.state.minutes} secs={this.state.seconds}/>
         </View>
     )

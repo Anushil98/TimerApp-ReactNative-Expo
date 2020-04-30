@@ -8,7 +8,8 @@ const styles=StyleSheet.create({
   main:{
     justifyContent:'center',
     width:windowWidth,
-    height:windowHeight
+    height:windowHeight,
+    borderWidth:1
   },
   counter:{
     flexDirection:'row',
@@ -37,11 +38,11 @@ const styles=StyleSheet.create({
   timeselector:{
     flexDirection:'row',
     height:150,
-    weidth:50,
-    justifyContent:'center',
+    width:50,
+    borderColor:"#000000"
   },
   scroll:{
-    alignItems:'center'
+    justifyContent:'center'
   },
   selectbutton:{
     backgroundColor: '#ffcccc',
@@ -77,7 +78,7 @@ export class MainTimer extends React.Component{
     minutes:min,
     seconds:sec
     }
-    
+
     this.on=false
   }
   start(){
@@ -108,6 +109,7 @@ export class MainTimer extends React.Component{
     }
   }
   stop(){
+    Vibration.cancel()
     Vibration.vibrate(50)
     if(this.on){
     clearInterval(this.interval)
@@ -115,6 +117,7 @@ export class MainTimer extends React.Component{
     }
   }
   reset(){
+    Vibration.cancel()
     clearInterval(this.interval)
     this.on=false
     Vibration.vibrate(50)
@@ -165,7 +168,7 @@ export class MainTimer extends React.Component{
       </Text>
       </View>
       </View>
-    ) 
+    )
   }
 }
 export default class App extends React.Component{
@@ -176,7 +179,7 @@ export default class App extends React.Component{
       seconds:"30",
       timeselected:false
     }
-    
+
   }
   setminute(arg1){
     this.setState(prevState=>({
@@ -186,19 +189,22 @@ export default class App extends React.Component{
     }))
   }
   setsecond(arg1){
+  console.log("hola")
     this.setState(prevState=>({
       minutes:prevState.minutes,
       seconds:arg1.toString(),
       timeselected:prevState.timeselected
     }))
   }
-  
-  re = () =>{
+
+  re(){
+    Vibration.cancel()
     this.setState(prevState=>({
       minutes:prevState.minutes,
       seconds:prevState.seconds,
-      timeselected:!prevState.timeselected
+      timeselected: !prevState.timeselected
     }))
+    console.log("Suup")
   }
   render(){
     let arr=[]
@@ -211,30 +217,34 @@ export default class App extends React.Component{
         <View style={{flexDirection:'row',justifyContent:'center',marginBottom:50}}>
         <Text style={{fontSize:30}}>Select Time</Text>
         </View>
-        <View style={styles.timeselector}>
-        <View style={{marginRight:10}}>
-        <Text style={{justifyContent:'center',fontSize:15}}>Minutes</Text>
-        <ScrollView style={styles.scroll}>
-        
-        {
-          arr.map(i=>(<TimeOpt num={i} id={0} onclick={()=>this.setminute(i)}/>))
-        }
-        </ScrollView>
-        <View style={{flexDirection:'row',justifyContent:'center'}}>
-        <Text style={{fontSize:15}}>{this.state.minutes}</Text>
-        </View>
-        </View>
-        <View>
-        <Text style={{justifyContent:'center',fontSize:15}}>Seconds</Text>
-        <ScrollView style={styles.scroll}>
-        {
-          arr.map(i=>(<TimeOpt num={i} id={1} onclick={()=>this.setsecond(i)}/>))
-        }
-        </ScrollView>
-        <View style={{flexDirection:'row',justifyContent:'center'}}>
-        <Text style={{fontSize:15}} >{this.state.seconds}</Text></View>
-        </View>
-        </View>
+
+            <View style={{flexDirection:'row',height:100,width:windowWidth,justifyContent:"center"}}>
+                        <View style={{marginRight:10}}>
+                        <Text style={{justifyContent:'center',fontSize:15}}>Minutes</Text>
+                        <ScrollView >
+
+                        {
+                        arr.map(i=>(<TimeOpt key={i}  num={i} id={0} onclick={()=>this.setminute(i)}/>))
+                        }
+                        </ScrollView>
+                        <View style={{flexDirection:'row',justifyContent:'center'}}>
+                        <Text style={{fontSize:15}}>{this.state.minutes}</Text>
+                        </View>
+                        </View>
+                        <View>
+                            <Text style={{justifyContent:'center',fontSize:15}}>Seconds</Text>
+
+                            <ScrollView >
+                                {
+                                    arr.slice(1).map(i=>(<TimeOpt key={i}  num={i} id={1} onclick={()=>this.setsecond(i)}/>))
+                                }
+                            </ScrollView>
+                            <View style={{flexDirection:'row',justifyContent:'center'}}>
+                                <Text style={{fontSize:15}} >{this.state.seconds}</Text>
+                            </View>
+                        </View>
+            </View>
+
         <View style={{margin:10,flexDirection:'row',justifyContent:'center'}}>
         <TouchableOpacity onPress={()=>this.re()} style={styles.button}><Text>Go</Text></TouchableOpacity>
         </View>
@@ -244,8 +254,10 @@ export default class App extends React.Component{
     else{
       return(
         <View>
-        <TouchableOpacity onPress={()=>this.re()} style={[styles.button,{position:'absolute',top:windowHeight-80,width:windowWidth-20}]}><Text style={styles.buttontext}>Back</Text></TouchableOpacity>
         <MainTimer mins={this.state.minutes} secs={this.state.seconds}/>
+        <TouchableOpacity onPress={()=>this.re()} style={[styles.button,{position:'absolute',top:windowHeight-80,width:windowWidth-20}]}>
+        <Text style={styles.buttontext}>Back</Text>
+        </TouchableOpacity>
         </View>
     )
     }
